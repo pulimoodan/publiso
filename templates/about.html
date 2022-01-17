@@ -1,0 +1,123 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with user=user %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target='all' %}
+
+            <h2 class="custom-title" >About Publiso</h2>
+
+            <div class="first-row book">
+
+                <div class="bk-of-day">
+                    <div class="box">
+                        <div class="content">
+                            <h5 class="author-name">Introduction</h5>
+                            <p class="description" style="text-transform: none;">
+                                Launched in 2022, Publiso is a popular ebook reading platform with a reputation for innovation, integrity and independence. We sell ebooks direct to millions of consumers around the world.
+
+                                You can read our ebooks online, paying for a cheap subscription charged monthly.
+
+                                Publiso is privately held and run by its founders, Akbar Ali and Badusha Basheer. It is the only independent ebook reading platform that available in every country in the world.
+
+                                Publiso hosts over a million unique ebook titles and has millions of members.
+
+                                In addition to our popular ebook-store, we provide services to book publishers. Publiso is a system that enables publishers to send secure ebooks to reviewers, instructors and readers.
+                            </p>
+                            <h5 class="author-name">Online (Browser-Based) Reader App</h5>
+                            <p class="description" style="text-transform: none;">
+                                Our proprietary web-based reader enables desktop users to immediately start reading, without having to download or install software. Currently undergoing an upgrade to make it suitable for mobile platforms. Suitable for retail and library use.
+                            </p>
+                            <h5 class="author-name">The Team</h5>
+                            <p class="description" style="text-transform: none;">
+                                Deep, broad, detailed domain expertise. The company comprises a small team of long-time ebook specialists. Our newest developer was engaged in 2022. Some of our guys started in 2020. It's fair to say that our team knows pretty much everything about processing, managing and securely delivering ebooks to a global audience.
+                            </p>
+                            <h5 class="author-name">Millions of titles to choose from</h5>
+                            <p class="description" style="text-transform: none;">
+                                Our catalogue has endless choices, and it's always growing. You'll find every type of eBook imaginable, from yesterday's classics to today's bestsellers, as well as our expertly curated collection of audiobooks. Discover recommendations for books we think you'll love—the perfect read is right here waiting for you.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div> 
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+        // book of the day toggle script
+        $('.first-row .bk-of-day .box').first().addClass('active');
+
+
+        function resize() {
+            // s
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+    </script>
+</body>
+</html>

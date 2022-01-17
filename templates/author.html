@@ -1,0 +1,178 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ author.name }} - Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with active='authors' user=user %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target='authors' %}
+
+            <div class="first-row book">
+
+                <div class="column author">
+                    <div class="cover" style="background: url({{author.profile_picture.url}});"></div>
+                </div>
+
+                <div class="bk-of-day">
+                    <div class="box active">
+                        <div class="content">
+                            <div class="scores">
+                                <div class="rating"><i class="fas fa-book"></i> <h6 class="value">{{author.books}} </h6></div>
+                                <div class="rating"><i class="fas fa-eye"></i> <h6 class="value">{{author.reads_count}} </h6></div>
+                                <div class="rating"><i class="fas fa-star"></i> <h6 class="value">{{author.rating}} </h6></div>
+                            </div>
+                            <h3 class="book-name">{{author.name}}</h3>
+                            <h5 class="author-name">{{author.full_name}}</h5>
+                            <p class="description">
+                                <b>Country :</b> {{author.get_country_display}} <br>
+                                <b>Birth :</b> {{author.dob}} <br>
+                                {% if author.dod %}
+                                    <b>Death :</b> {{author.dod}} <br>
+                                {% endif %}
+                            </p>
+                            {% if not user.unknown and author.pk|is_following:user.pk %}
+                                <button onclick="event.preventDefault(); followAuthor(this, '{{author.pk}}')" class="btn primary">Following <i class="fas fa-check"></i></button>
+                            {% else %}
+                                <button onclick="event.preventDefault(); followAuthor(this, '{{author.pk}}')" class="btn primary">Follow</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="second-row popular author">
+                <div class="header">
+                    <h2 class="title">Books</h2>
+                </div>
+                <div class="books {% if not books %}empty{% endif %}">
+                    {% for book in books %}
+                        <a href="{% url 'book' book.pk %}" class="book active">
+                            <div class="cover" style="background: url({{book.cover_picture.url}});"></div>
+                            <div class="details">
+                                <p class="author-name">{{book.author|truncatechars:30}}</p>
+                                <h5 class="book-name">{{book.name|truncatechars:30}}</h5>
+                                <div class="rating"><i class="fas fa-star"></i> <h6 class="value">{{book.rating|floatformat:"1"}}</h6></div>
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'read' book.pk %}'" class="btn primary">Read Now</button>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="nothing">
+                            <h3>No books of this author added here</h3>
+                            <h5>Wait to upload new books</h5>
+                            <a href="{% url 'authors' %}"><button class="btn primary">Go back to authors</button></a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+
+        function resize() {
+            // something
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+
+        function followAuthor(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'follow_author' %}",
+                data:{
+                    author_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        $(elem).html('Following <i class="fas fa-check"></i>');
+                    }else{
+                        $(elem).html('Follow');
+                    }
+                }
+            });
+        }
+
+        function getCookie(c_name)
+        {
+            if (document.cookie.length > 0)
+            {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

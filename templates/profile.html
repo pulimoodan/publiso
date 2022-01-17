@@ -1,0 +1,254 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <title>Profile - Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with user=user %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target='all' %}
+
+            <div class="first-row book">
+
+                <div class="column author profile">
+                    <div class="cover" style="background: url({{user.pk|get_profile_picture}});">
+                        <form action="#" enctype="multipart/form-data" method="post" id="profile-form" class="wrapper">
+                            {% csrf_token %}
+                            <button onclick="event.preventDefault();chooseProfilePic()">Choose profile picture</button>
+                            <input type="file" name="image" id="profile" style="display: none;"/>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="bk-of-day">
+                    <div class="box active">
+                        <div class="content">
+                            <h3 class="book-name">
+                                {% if user.first_name or user.last_name %}
+                                    {{user.first_name}} {{user.last_name}}
+                                {% else %}
+                                    Unknown
+                                {% endif %}
+                            </h3>
+                            <h5 class="author-name" style="text-transform: none;">{{user.username}}</h5>
+                            <p class="description" style="text-transform: none;">
+                                <b>Email : </b> {{user.email}}
+                            </p>
+                            <div class="actions">
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'logout' %}'" class="btn primary">Logout <i class="fas fa-times"></i></button>
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'details' %}';" class="btn secondary">Edit Details</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="second-row popular author follow">
+                <div class="header">
+                    <h2 class="title">Following</h2>
+                </div>
+                <div class="books {% if not follows %}empty{% endif %}">
+                    {% for follow in follows %}
+                        <a href="{% url 'author' follow.author.pk %}" class="book active">
+                            <div class="cover" style="background: url({{follow.author.profile_picture.url}});"></div>
+                            <div class="details">
+                                <p class="author-name">{{follow.author.full_name|truncatechars:30}}</p>
+                                <h5 class="book-name">{{follow.author.name|truncatechars:30}}</h5>
+                                <div class="scores">
+                                    <div class="rating small"><i class="fas fa-book"></i> <h6 class="value">{{follow.author.books}} </h6></div>
+                                    <div class="rating small"><i class="fas fa-eye"></i> <h6 class="value">{{follow.author.reads_count}} </h6></div>
+                                    <div class="rating small"><i class="fas fa-star"></i> <h6 class="value">{{follow.author.rating}} </h6></div>
+                                </div>
+                                <button onclick="event.preventDefault(); followAuthor(this, {{follow.author.pk}})" class="btn primary">Unfollow</button>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="nothing">
+                            <h3>You haven't followed any authors yet</h3>
+                            <h5>Follow someone to get notified</h5>
+                            <a href="{% url 'authors' %}"><button class="btn primary">Go back to authors</button></a>
+                        </div>
+                    {% endfor %}
+                    {% if follows %}
+                        <div class="nothing" style="display: none;">
+                            <h3>You haven't followed any authors yet</h3>
+                            <h5>Follow someone to get notified</h5>
+                            <a href="{% url 'authors' %}"><button class="btn primary">Go back to authors</button></a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="second-row popular author">
+                <div class="header">
+                    <h2 class="title">Recent Reads</h2>
+                </div>
+                <div class="books {% if not reads %}empty{% endif %}">
+                    {% for read in reads %}
+                        <a href="{% url 'book' read.book.pk %}" class="book active">
+                            <div class="cover" style="background: url({{read.book.cover_picture.url}});"></div>
+                            <div class="details">
+                                <p class="author-name">{{read.book.author|truncatechars:30}}</p>
+                                <h5 class="book-name">{{read.book.name|truncatechars:30}}</h5>
+                                <div class="rating small"><i class="far fa-sticky-note"></i> <h6 class="value">{{read.book.pk|get_current_page:user.pk}} of {{read.book.pages}} </h6></div>
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'read' read.book.pk %}'" class="btn primary">Read Now</button>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <div class="nothing">
+                            <h3>No history to show here</h3>
+                            <h5>No activities recorded from you yet</h5>
+                            <a href="{% url 'home' %}"><button class="btn primary">Go back home</button></a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+
+        function resize() {
+            // something
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+
+        function followAuthor(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'profile_upload' %}",
+                data:{
+                    author_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        // something
+                    }else{
+                        $(elem).closest('.book').remove();
+                        if($('.second-row.follow .book').length == 0){
+                            $('.second-row.follow .books').addClass('empty');
+                            $('.second-row.follow .nothing').css({'display':'flex'});
+                        }
+                    }
+                }
+            });
+        }
+
+        function getCookie(c_name)
+        {
+            if (document.cookie.length > 0)
+            {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+
+        function chooseProfilePic(elem){
+            $('#profile').click();
+        }
+
+        $('#profile').change(function () {
+            $('#profile-form').submit();
+        })
+
+        $('#profile-form').submit(function () {
+            var formData = new FormData();
+
+            var f_obj = $("#profile").get(0).files[0];
+            console.log(f_obj);
+            formData.append("file",f_obj);
+
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'profile_upload' %}",
+                processData: false,
+                cache: false,
+                contentType: false,
+                data:formData,
+                success: function( data ) 
+                {
+                    $('.column.profile .cover').css({'background':`url(${data.url})`});
+                }
+            });
+            return false;
+        })
+        
+    </script>
+</body>
+</html>

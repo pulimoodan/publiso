@@ -1,0 +1,134 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with user=user active="categories" %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target='categories' categories=categories %}
+
+            <div class="first-row library {% if not categories %}empty{% endif %}">
+
+                {% for category in categories %}
+                    <a href="{% url 'category' category.pk %}" class="book">
+                        <div class="details"> 
+                            <h5 class="book-name" style="margin-bottom: 0.8rem;">{{category.name}}</h5>
+                            <p class="author-name" style="margin-bottom: 0;">Books : {{category.books}}</p>
+                        </div>
+                        <div class="cover" style="background: {{category.color}}; margin-right: 0; width: 55px; height: 55px;"></div>
+                    </a>
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+        // book of the day toggle script
+        $('.first-row .bk-of-day .box').first().addClass('active');
+
+        function resize() {
+           // something
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+
+        function followAuthor(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'follow_author' %}",
+                data:{
+                    author_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        $(elem).html('Following <i class="fas fa-check"></i>');
+                    }else{
+                        $(elem).html('Follow');
+                    }
+                }
+            });
+        }
+
+        function getCookie(c_name)
+        {
+            if (document.cookie.length > 0)
+            {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{% load tz_detect %}
+{% tz_detect %}
+{% now "H" as current_time %}
+{% load webapp_extras %}
+{% load static %}
+<div class="sidenav">
+            
+    <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+        <div class="background"></div>
+    </div>
+    <div class="logo">
+        <a href="#"><embed src="{% static 'image/logo.svg' %}" style="width: 40px; margin-right: 0.5rem;" alt="publiso logo"> publiso </a>
+    </div>
+    <ul class="links">
+        <li {% if active == "all" %} class="active" {% endif %}><i class="fas fa-bullseye"></i><a href="{% url 'home' %}">All</a></li>
+        <li {% if active == "library" %} class="active" {% endif %}><i class="fas fa-book"></i><a href="{% url 'library' %}">Library</a></li>
+        <li {% if active == "categories" %} class="active" {% endif %}><i class="fas fa-folder-open"></i><a href="{% url 'categories' %}">Categories</a></li>
+        <li {% if active == "authors" %} class="active" {% endif %}><i class="fas fa-user-friends"></i><a href="{% url 'authors' %}">Authors</a></li>
+        <li {% if active == "recommended" %} class="active" {% endif %}><i class="fas fa-star"></i><a href="{% url 'recommended' %}">Recommended</a></li>
+    </ul>
+    <ul class="extra-links">
+        <li> <a href="{% url 'about' %}">About</a> </li>
+        <li> <a href="{% url 'contact' %}">Contact</a> </li>
+        <li> <a href="{% url 'policy' %}">Policy</a> </li>
+        <li> <a href="{% url 'terms' %}">Terms</a> </li>
+    </ul>
+    <a href="{% url 'profile' %}" class="user">
+        <div class="image" style="background: url({{user.pk|get_profile_picture}});"></div>
+        <div class="details">
+            <p class="hello">Good 
+                {% if current_time|add:"0" > 17 %}
+                    Evening!
+                {% elif current_time|add:"0" > 12 %}
+                    Afternoon!
+                {% else %}
+                    Morning!
+                {% endif %}
+            </p>
+            <h6 class="name">
+                {% if user.first_name == '' %}
+                    {{user.username}}
+                {% else %}
+                    {{user.first_name}}
+                {% endif %}
+            </h6>
+        </div>
+    </a>
+</div>

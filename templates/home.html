@@ -1,0 +1,427 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <title>Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with user=user active="all" %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target="all" %}
+
+            <div class="first-row">
+
+                <div class="bk-of-day">
+                    <div class="header">
+                        <h2 class="title">Book of the day</h2>
+                        <div class="buttons">
+                            <button class="left"><i class="fas fa-chevron-left"></i></button>
+                            <button class="right"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    {% for book in books_of_the_day %}
+                        <a href="{% url 'book' book.pk %}" class="box">
+                            <div class="cover" style="background: url({{book.cover_picture.url}});"></div>
+                            <div class="content">
+                                <div class="scores">
+                                    <div class="rating"><i class="fas fa-star"></i> <h6 class="value">{{book.rating|floatformat:"1"}}</h6></div>
+                                    <div class="rating"><i class="fas fa-eye"></i> <h6 class="value">{{book.reads_count}}</h6></div>
+                                </div>
+                                <h3 class="book-name">{{book.name|truncatechars:25}}</h3>
+                                <h5 class="author-name">{{book.author|truncatechars:30}}</h5>
+                                <p class="description">{{book.description|truncatechars:300}}</p>
+                                <div class="actions">
+                                    {% if book.id|is_added_to_library:user.id %}
+                                        <button onclick="event.preventDefault();addToLibrary(this, {{book.id}});" class="btn primary">Added to Library <i class="fas fa-check"></i></button>
+                                    {% else %}
+                                        <button onclick="event.preventDefault();addToLibrary(this, {{book.id}});" class="btn primary">Add to Library <i class="fas fa-plus"></i></button>
+                                    {% endif %}
+                                    <button onclick="event.preventDefault(); window.location.href='{% url 'read' book.pk %}'" class="btn secondary">Read Now</button>
+                                    
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+
+                <div class="column">
+
+                    <div class="authors">
+                        <div class="header">
+                            <h2 class="title">Authors</h2>
+                            <a href="{% url 'authors' %}">See All</a>
+                        </div>
+                        <ul>
+                            {% for author in authors %}
+                                <a href="{% url 'author' author.pk %}">
+                                    <li>
+                                        <div class="profile" style="background: url({{author.profile_picture.url}});"></div>
+                                        <div class="details">
+                                            <h5 class="name">{{author.name}}</h5>
+                                            <div class="sub">{{author.books}} books • {{author.reads_count}} reads</div>
+                                        </div>
+                                        {% if not user.unknown and author.pk|is_following:user.pk %}
+                                            <button onclick="event.preventDefault(); followAuthor(this, '{{author.pk}}')" class="btn primary px700b">Following <i class="fas fa-check"></i></button>
+                                        {% else %}
+                                            <button onclick="event.preventDefault(); followAuthor(this, '{{author.pk}}')" class="btn primary px700b">Follow</button>
+                                        {% endif %}
+                                    </li>
+                                </a>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="free-books">
+                        <div class="header">
+                            <h2 class="title">Latest</h2>
+                            <a href="{% url 'latest' %}">See All</a>
+                        </div>
+                        <div class="books">
+                            {% for book in latest_books %}
+                                <a href="{% url 'book' book.pk %}" class="book">
+                                    <div class="cover" style="background: url({{book.cover_picture.url}});"></div>
+                                    <div class="details">
+                                        <h5 class="book-name">{{book.name|truncatechars:14}}</h5>
+                                        <p class="author-name">{{book.author|truncatechars:30}}</p>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="second-row popular">
+                <div class="header">
+                    <h2 class="title">Popular</h2>
+                    <div class="buttons">
+                        <button class="left"><i class="fas fa-chevron-left"></i></button>
+                        <button class="right"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="books">
+                    {% for book in popular_books %}
+                        <a href="{% url 'book' book.pk %}" class="book">
+                            <div class="cover" style="background: url({{book.cover_picture.url}});"></div>
+                            <div class="details">
+                                <p class="author-name">{{book.author|truncatechars:30}}</p>
+                                <h5 class="book-name">{{book.name|truncatechars:30}}</h5>
+                                <div class="rating"><i class="fas fa-star"></i> <h6 class="value">{{book.rating|floatformat:"1"}}</h6></div>
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'read' book.pk %}'" class="btn primary">Read Now</button>
+                            </div>
+                        </a>
+                    {% endfor %}
+                    <a href="{% url 'popular' %}" class="book view-more">
+                        <button class="btn primary">View More</button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="second-row most-read">
+                <div class="header">
+                    <h2 class="title">Most Read</h2>
+                    <div class="buttons">
+                        <button class="left"><i class="fas fa-chevron-left"></i></button>
+                        <button class="right"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="books">
+                    {% for book in most_read_books %}
+                        <a href="{% url 'book' book.pk %}" class="book">
+                            <div class="cover" style="background: url({{book.cover_picture.url}});"></div>
+                            <div class="details">
+                                <p class="author-name">{{book.author|truncatechars:30}}</p>
+                                <h5 class="book-name">{{book.name|truncatechars:30}}</h5>
+                                <div class="rating"><i class="fas fa-eye"></i> <h6 class="value">{{book.reads_count}}</h6></div>
+                                <button onclick="event.preventDefault(); window.location.href='{% url 'read' book.pk %}'" class="btn primary">Read Now</button>
+                            </div>
+                        </a>
+                    {% endfor %}
+                    <a href="{% url 'most_read' %}" class="book view-more">
+                        <button class="btn primary">View More</button>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+        // book of the day toggle script
+        $('.first-row .bk-of-day .box').first().addClass('active');
+        $('.first-row .bk-of-day .header .buttons .left').click(function(){
+            if($('.first-row .bk-of-day .box.active').is($('.first-row .bk-of-day .box').first())){
+                // console.log('The End');
+            }else{
+                $('.first-row .bk-of-day .box.active').prev().addClass('pre-active');
+                $('.first-row .bk-of-day .box.active').removeClass('active');
+                $('.first-row .bk-of-day .box.pre-active').addClass('active');
+                $('.first-row .bk-of-day .box.pre-active').removeClass('pre-active');
+                checkEndsOfBofDay();
+            }
+        });
+        $('.first-row .bk-of-day .header .buttons .right').click(function(){
+            if($('.first-row .bk-of-day .box.active').is($('.first-row .bk-of-day .box').last())){
+                // console.log('The End');
+            }else{
+                $('.first-row .bk-of-day .box.active').next().addClass('pre-active');
+                $('.first-row .bk-of-day .box.active').removeClass('active');
+                $('.first-row .bk-of-day .box.pre-active').addClass('active');
+                $('.first-row .bk-of-day .box.pre-active').removeClass('pre-active');
+                checkEndsOfBofDay();
+            }
+        });
+
+        function checkEndsOfBofDay(){
+            if($('.first-row .bk-of-day .box.active').is($('.first-row .bk-of-day .box').last())){
+                $('.first-row .bk-of-day .header .buttons .right').css({'opacity':'0.5'});
+            }else{
+                $('.first-row .bk-of-day .header .buttons .right').css({'opacity':'1'});
+            }
+            if($('.first-row .bk-of-day .box.active').is($('.first-row .bk-of-day .box').first())){
+                $('.first-row .bk-of-day .header .buttons .left').css({'opacity':'0.5'});
+            }else{
+                $('.first-row .bk-of-day .header .buttons .left').css({'opacity':'1'});
+            }
+        }
+        // ============
+
+        // popular books toggle movement
+        var popularCurPos = 1
+        var popularVisible = 3
+        $('.second-row.popular .books .book').slice(popularVisible * (popularCurPos - 1), popularVisible * (popularCurPos)).addClass('active');
+        $('.second-row.popular .books .book.active').last().addClass('last-active');
+        $('.second-row.popular .header .buttons .right').click(function(){
+            if($('.second-row.popular .books .book.active').last().is($('.second-row.popular .books .book').last())){
+                // console.log('The End');
+            }else{
+                popularCurPos++;
+                $('.second-row.popular .books .book').removeClass('active');
+                $('.second-row.popular .books .book').removeClass('last-active');
+                $('.second-row.popular .books .book').slice(popularVisible * (popularCurPos - 1), popularVisible * (popularCurPos)).addClass('active');
+                checkEndsOfPopular();
+                $('.second-row.popular .books .book.active').last().addClass('last-active');
+            }
+        });
+        $('.second-row.popular .header .buttons .left').click(function(){
+            if($('.second-row.popular .books .book.active').first().is($('.second-row.popular .books .book').first())){
+                // console.log('The End');
+            }else{
+                popularCurPos--;
+                $('.second-row.popular .books .book').removeClass('active');
+                $('.second-row.popular .books .book').removeClass('last-active');
+                $('.second-row.popular .books .book').slice(popularVisible * (popularCurPos - 1), popularVisible * (popularCurPos)).addClass('active');
+                checkEndsOfPopular();
+                $('.second-row.popular .books .book.active').last().addClass('last-active');
+            }
+        });
+
+        function checkEndsOfPopular(){
+            if($('.second-row.popular .books .book.active').last().is($('.second-row.popular .books .book').last())){
+                $('.second-row.popular .header .buttons .right').css({'opacity':'0.5'});
+            }else{
+                $('.second-row.popular .header .buttons .right').css({'opacity':'1'});
+            }
+            if($('.second-row.popular .books .book.active').first().is($('.second-row.popular .books .book').first())){
+                $('.second-row.popular .header .buttons .left').css({'opacity':'0.5'});
+            }else{
+                $('.second-row.popular .header .buttons .left').css({'opacity':'1'});
+            }
+        }
+        // ============
+
+        // most read books toggle movement
+        var mostReadCurPos = 1
+        var mostReadVisible = 3
+        $('.second-row.most-read .books .book').slice(mostReadVisible * (mostReadCurPos - 1), mostReadVisible * (mostReadCurPos)).addClass('active');
+        $('.second-row.most-read .header .buttons .right').click(function(){
+            if($('.second-row.most-read .books .book.active').last().is($('.second-row.most-read .books .book').last())){
+                // console.log('The End');
+            }else{
+                mostReadCurPos++;
+                $('.second-row.most-read .books .book').removeClass('active');
+                $('.second-row.most-read .books .book').removeClass('last-active');
+                $('.second-row.most-read .books .book').slice(mostReadVisible * (mostReadCurPos - 1), mostReadVisible * (mostReadCurPos)).addClass('active');
+                checkEndsOfMostRead();
+                $('.second-row.most-read .books .book.active').last().addClass('last-active');
+            }
+        });
+        $('.second-row.most-read .header .buttons .left').click(function(){
+            if($('.second-row.most-read .books .book.active').first().is($('.second-row.most-read .books .book').first())){
+                // console.log('The End');
+            }else{
+                mostReadCurPos--;
+                $('.second-row.most-read .books .book').removeClass('active');
+                $('.second-row.most-read .books .book').removeClass('last-active');
+                $('.second-row.most-read .books .book').slice(mostReadVisible * (mostReadCurPos - 1), mostReadVisible * (mostReadCurPos)).addClass('active');
+                checkEndsOfMostRead();
+                $('.second-row.most-read .books .book.active').last().addClass('last-active');
+            }
+        });
+
+        function checkEndsOfMostRead(){
+            if($('.second-row.most-read .books .book.active').last().is($('.second-row.most-read .books .book').last())){
+                $('.second-row.most-read .header .buttons .right').css({'opacity':'0.5'});
+            }else{
+                $('.second-row.most-read .header .buttons .right').css({'opacity':'1'});
+            }
+            if($('.second-row.most-read .books .book.active').first().is($('.second-row.most-read .books .book').first())){
+                $('.second-row.most-read .header .buttons .left').css({'opacity':'0.5'});
+            }else{
+                $('.second-row.most-read .header .buttons .left').css({'opacity':'1'});
+            }
+        }
+        // ============
+
+        function resize() {
+            if(window.innerWidth > 1000){
+                popularVisible = 3
+                mostReadVisible = 3
+            }
+            if(window.innerWidth < 1000){
+                popularVisible = 2
+                mostReadVisible = 2
+            }
+            if(window.innerWidth > 700){
+                $('.first-row .column .free-books .books .book').removeClass('active');
+                $('.first-row .column .free-books .books .book').slice(0, 4).addClass('active');
+            }
+            if(window.innerWidth < 700){
+                popularVisible = 1
+                mostReadVisible = 1
+                $('.first-row .column .free-books .books .book').addClass('active');
+            }
+            popularCurPos = 1
+            mostReadCurPos = 1
+            $('.second-row.popular .books .book').removeClass('active');
+            $('.second-row.popular .books .book').slice(popularVisible * (popularCurPos - 1), popularVisible * (popularCurPos)).addClass('active');
+            $('.second-row.most-read .books .book').removeClass('active');
+            $('.second-row.most-read .books .book').slice(mostReadVisible * (mostReadCurPos - 1), mostReadVisible * (mostReadCurPos)).addClass('active');
+            checkEndsOfMostRead();
+            checkEndsOfPopular();
+            $('.second-row.popular .books .book.active').removeClass('last-active');
+            $('.second-row.popular .books .book.active').last().addClass('last-active');
+            $('.second-row.most-read .books .book.active').removeClass('last-active');
+            $('.second-row.most-read .books .book.active').last().addClass('last-active');
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+
+        function addToLibrary(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'add_to_library' %}",
+                data:{
+                    book_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        $(elem).html('Added to Library <i class="fas fa-check"></i>');
+                    }else{
+                        $(elem).html('Add to Library <i class="fas fa-plus"></i>');
+                    }
+                }
+            });
+        }
+
+        function followAuthor(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'follow_author' %}",
+                data:{
+                    author_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        $(elem).html('Following <i class="fas fa-check"></i>');
+                    }else{
+                        $(elem).html('Follow');
+                    }
+                }
+            });
+        }
+
+        function getCookie(c_name)
+        {
+            if (document.cookie.length > 0)
+            {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

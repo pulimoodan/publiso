@@ -1,0 +1,449 @@
+{% load webapp_extras %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <title>{{book_name}} - Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root{
+            --border-color: rgba(0,0,0,0.1);
+            --hover-color: rgba(0,0,0,0.2);
+            --active-color: rgb(104, 214, 41);
+        }
+        body{
+            font-family: 'Montserrat', sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        .container{
+            padding: 1rem;
+            background: #eee;
+            height: calc(100vh - 2rem);
+            width: calc(100vw - 2rem);
+            display: grid;
+            grid-template-columns: auto;
+            grid-column-gap: 2rem;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        .page{
+            height: calc(100vh - 3rem);
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -o-user-select: none;
+            user-select: none;
+        }
+        .controls{
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .controls.active{
+            bottom: 20px;
+        }
+        .controls .buttons, .controls .zoom, .controls .page-number, .controls .full-screen{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .controls button{
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem;
+            background: #def7ec;
+            cursor: pointer;
+            color: #0e9f6e;
+            border: 1px solid #0e9f6e;
+            transition: 0.3s;
+        }
+        .controls .page-number button:last-of-type{
+            margin-left: 0.5rem;
+        }
+        .controls .zoom, .controls .page-number, .controls .full-screen{
+            margin-right: 2rem;
+        }
+        .controls .page-number{
+            font-size: 0.8rem;
+        }
+        button:hover{
+            background: #0e9f6e;
+            color: #def7ec;
+        }
+        .head{
+            width: calc(100% - 4rem);
+            position: fixed;
+            padding: 1rem 2rem;
+            background: #def7ec6e;
+            top: 0;
+            left: 0;
+            color: #292929;
+            box-shadow: 0px 5px 30px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transform: translateY(-100%);
+            transition: 0.3s;
+        }
+        .head.active{
+            transform: translateY(0%);
+        }
+        .head h1{
+            margin: 0;
+            margin-bottom: 0.5rem;
+            color: #292929;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        .head h3{
+            margin: 0;
+            color: #292929;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .head .btn{
+            border: 1px solid var(--active-color);
+            padding: .5rem 1rem;
+            border-radius: 50px;
+            font-size: .7rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: block;
+            background: var(--active-color);
+            color: #fff;
+        }
+
+        .head .btn i{
+            margin-left: 0.5rem;
+        }
+
+        button.close{
+            color: #0e9f6e;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #def7ec;
+            border: none;
+            border: 1px solid #0e9f6e;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        button.close:hover{
+            background: #0e9f6e;
+            color: #def7ec;
+        }
+
+        @media(max-width:800px){
+            .head{
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .head .btn{
+                margin-top: 1rem;
+            }
+            button.close{
+                margin-bottom: 1rem;
+            }
+        }
+        @media(max-width:700px){
+            .controls{
+                flex-direction: column;
+                align-items: flex-start;
+                left: 0px;
+                transform: translateX(0%);
+                bottom: -300px;
+            }
+            .controls.active{
+                bottom: 0px;
+            }
+            .controls div{
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="head active">
+        <button class="close" onclick="window.history.go(-1); return false;">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="details">
+            <h1>{{book_name}}</h1>
+            <h3>{{book_author}}</h3>
+        </div>
+        {% if book_id|is_added_to_library:user.id %}
+            <button onclick="event.preventDefault();addToLibrary(this, {{book_id}});" class="btn primary">Added to Library <i class="fas fa-check"></i></button>
+        {% else %}
+            <button onclick="event.preventDefault();addToLibrary(this, {{book_id}});" class="btn primary">Add to Library <i class="fas fa-plus"></i></button>
+        {% endif %}
+    </div>
+    <div class="container">
+        <img src="data:image/png;base64,{{image|safe}}" class="page" oncontextmenu="return false;" draggable="false"/>
+    </div>
+    <div class="controls active">
+        <div class="full-screen">
+            <button class="expand"><i class="fas fa-expand"></i></button>
+            <button class="compress"><i class="fas fa-compress"></i></button>
+        </div>
+        <div class="zoom">
+            <button class="zoom-out"><i class="fas fa-search-minus"></i></button>
+            <button class="zoom-reset"><i class="fas fa-search"></i></button>
+            <button class="zoom-in"><i class="fas fa-search-plus"></i></button>
+        </div>
+        <div class="page-number">
+            <button class="current">{{page_number}}</button>
+            of
+            <button class="total">{{total_page}}</button>
+        </div>
+        <div class="buttons">
+            <button class="start"><i class="fas fa-fast-backward"></i></button>
+            <button class="prev"><i class="fas fa-step-backward"></i></button>
+            <button class="next"><i class="fas fa-step-forward"></i></button>
+            <button class="end"><i class="fas fa-fast-forward"></i></button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.onload = function(){
+            if((window.fullScreen) ||
+            (window.innerWidth == screen.width && window.innerHeight == screen.height)) {
+                $('.full-screen .compress').css({'display':'flex'});
+                $('.full-screen .expand').css({'display':'none'});
+            } else {
+                $('.full-screen .compress').css({'display':'none'});
+                $('.full-screen .expand').css({'display':'flex'});
+            }
+        }
+
+        var page_number = parseInt('{{page_number}}');
+        var total_page = parseInt('{{total_page}}');
+        var book_id = parseInt('{{book_id}}');
+        $('.page').click(function(){
+            $('.controls').toggleClass('active');
+            $('.head').toggleClass('active');
+        });
+        $('.next').click(function(){
+            $.ajax(
+            {
+                type:"GET",
+                url: "{% url 'get_next_page' %}",
+                data:{
+                    book_id: book_id,
+                    page_num: page_number,
+                    total_page: total_page,
+                },
+                success: function( data ) 
+                {
+                    page_number = data.page_number;
+                    $('.page').attr('src', 'data:image/png;base64,' + data.page);
+                    $('.page-number .current').html(page_number);
+                }
+            });
+        });
+        $('.prev').click(function(){
+            $.ajax(
+            {
+                type:"GET",
+                url: "{% url 'get_prev_page' %}",
+                data:{
+                    book_id: book_id,
+                    page_num: page_number,
+                },
+                success: function( data ) 
+                {
+                    page_number = data.page_number;
+                    $('.page').attr('src', 'data:image/png;base64,' + data.page);
+                    $('.page-number .current').html(page_number);
+                }
+            });
+        });
+        $('.start').click(function(){
+            $.ajax(
+            {
+                type:"GET",
+                url: "{% url 'get_first_page' %}",
+                data:{
+                    book_id: book_id,
+                },
+                success: function( data ) 
+                {
+                    page_number = data.page_number;
+                    $('.page').attr('src', 'data:image/png;base64,' + data.page);
+                    $('.page-number .current').html(page_number);
+                }
+            });
+        });
+        $('.end').click(function(){
+            $.ajax(
+            {
+                type:"GET",
+                url: "{% url 'get_last_page' %}",
+                data:{
+                    book_id: book_id,
+                    total_page: total_page,
+                },
+                success: function( data ) 
+                {
+                    page_number = data.page_number;
+                    $('.page').attr('src', 'data:image/png;base64,' + data.page);
+                    $('.page-number .current').html(page_number);
+                }
+            });
+        });
+
+        currentZoom = 100;
+        $('.zoom .zoom-in').click(function(){
+            currentZoom += 10;
+            $('.page').css({'height':'calc(' + currentZoom + 'vh - 3rem)'})
+            checkZoom();
+        });
+        $('.zoom .zoom-out').click(function(){
+            currentZoom -= 10;
+            $('.page').css({'height':'calc(' + currentZoom + 'vh - 3rem)'})
+            checkZoom();
+        });
+        $('.zoom .zoom-reset').click(function(){
+            currentZoom = 100;
+            $('.page').css({'height':'calc(' + currentZoom + 'vh - 3rem)'});
+            checkZoom();
+        });
+
+        function checkZoom(){
+            if(window.screen.width < document.getElementsByClassName('page')[0].offsetWidth){
+                $('.container').css({'justify-content':'flex-start'});
+            }else{
+                $('.container').css({'justify-content':'center'});
+            }
+        }
+
+
+        $('.full-screen .expand').click(function(){
+            requestFullScreen();
+            $(this).css({'display':'none'});
+            $('.full-screen .compress').css({'display':'flex'});
+        });
+        $('.full-screen .compress').click(function(){
+            document.exitFullscreen();
+            $(this).css({'display':'none'});
+            $('.full-screen .expand').css({'display':'flex'});
+        });
+
+        function requestFullScreen() {
+            var element = document.body;
+            // Supports most browsers and their versions.
+            var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+
+            if (requestMethod) { // Native full screen.
+                requestMethod.call(element);
+            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+                var wscript = new ActiveXObject("WScript.Shell");
+                if (wscript !== null) {
+                    wscript.SendKeys("{F11}");
+                }
+            }
+        }
+
+        $('.page-number .current').click(async function () {
+            const { value: go_to } = await Swal.fire({
+                input: 'number',
+                inputLabel: 'Go to page number',
+                inputPlaceholder: '{{total_page}}'
+            });
+
+            if (go_to) {
+                $.ajax(
+                {
+                    type:"GET",
+                    url: "{% url 'go_to_page' %}",
+                    data:{
+                        book_id: book_id,
+                        go_to: go_to,
+                        total_page: total_page,
+                    },
+                    success: function( data ) 
+                    {
+                        if(data.success){
+                            page_number = data.page_number;
+                            $('.page').attr('src', 'data:image/png;base64,' + data.page);
+                            $('.page-number .current').html(page_number);
+                        }else{
+                            Swal.fire({
+                                'icon':'error',
+                                'text': 'Not much pages'
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        function addToLibrary(elem, id){
+            $.ajax(
+            {
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                type:"POST",
+                url: "{% url 'add_to_library' %}",
+                data:{
+                    book_id: id,
+                },
+                success: function( data ) 
+                {
+                    if(data.added){
+                        $(elem).html('Added to Library <i class="fas fa-check"></i>');
+                    }else{
+                        $(elem).html('Add to Library <i class="fas fa-plus"></i>');
+                    }
+                }
+            });
+        }
+
+        function getCookie(c_name)
+        {
+            if (document.cookie.length > 0)
+            {
+                c_start = document.cookie.indexOf(c_name + "=");
+                if (c_start != -1)
+                {
+                    c_start = c_start + c_name.length + 1;
+                    c_end = document.cookie.indexOf(";", c_start);
+                    if (c_end == -1) c_end = document.cookie.length;
+                    return unescape(document.cookie.substring(c_start,c_end));
+                }
+            }
+            return "";
+        }
+    </script>
+</body>
+</html>

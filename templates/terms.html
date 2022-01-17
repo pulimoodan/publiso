@@ -1,0 +1,147 @@
+{% load static %}
+{% load webapp_extras %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/svg" href="{% static 'image/logo.svg' %}"/>
+    <title>Terms - Publiso | Free e-books to read</title>
+    <meta name="description" content="Read unlimited ebooks for free. Publiso delivers variety of ebooks to users"/>
+    <meta name="keywords" content="e-books, books, publiso, publiso.in, read online">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/publiso.css' %}">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+</head>
+<body>
+    <div class="container">
+
+        {% include "components/sidenav.html" with user=user %}
+
+        <div class="main-section">
+
+            {% include "components/head.html" with target='all' %}
+
+            <h2 class="custom-title" >Terms and Conditions</h2>
+
+            <div class="first-row book">
+
+                <div class="bk-of-day">
+                    <div class="box">
+                        <div class="content">
+                            <p class="description" style="text-transform: none;">
+                                Last updated: January 12, 2022
+                            </p>
+                            <h5 class="author-name">Introduction</h5>
+                            <p class="description" style="text-transform: none;">
+                                Welcome to Publiso (“Company”, “we”, “our”, “us”)! <br>
+                                These Terms of Service (“Terms”, “Terms of Service”) govern your use of our website located at www.publiso.in (together or individually “Service”) operated by Publiso. <br>
+                                Our Privacy Policy also governs your use of our Service and explains how we collect, safeguard and disclose information that results from your use of our web pages. <br>
+                                Your agreement with us includes these Terms and our Privacy Policy (“Agreements”). You acknowledge that you have read and understood Agreements, and agree to be bound of them. <br>
+                                If you do not agree with (or cannot comply with) Agreements, then you may not use the Service, but please let us know by emailing at info.publiso@gmail.com so we can try to find a solution. These Terms apply to all visitors, users and others who wish to access or use Service. <br>
+                            </p>
+                            <h5 class="author-name">Communications</h5>
+                            <p class="description" style="text-transform: none;">
+                                By using our Service, you agree to subscribe to newsletters, marketing or promotional materials and other information we may send. However, you may opt out of receiving any, or all, of these communications from us by following the unsubscribe link or by emailing at info.publiso@gmail.com.
+                            </p>
+                            <h5 class="author-name">Purchases</h5>
+                            <p class="description" style="text-transform: none;">
+                                If you wish to purchase any product or service made available through Service (“Purchase”), you may be asked to supply certain information relevant to your Purchase including but not limited to, your credit or debit card number, the expiration date of your card, your billing address, and your shipping information. <br>
+                                You represent and warrant that: (i) you have the legal right to use any card(s) or other payment method(s) in connection with any Purchase; and that (ii) the information you supply to us is true, correct and complete. <br>
+                                We may employ the use of third party services for the purpose of facilitating payment and the completion of Purchases. By submitting your information, you grant us the right to provide the information to these third parties subject to our Privacy Policy. <br>
+                                We reserve the right to refuse or cancel your order at any time for reasons including but not limited to: product or service availability, errors in the description or price of the product or service, error in your order or other reasons. <br>
+                                We reserve the right to refuse or cancel your order if fraud or an unauthorized or illegal transaction is suspected.
+                            </p>
+                            <h5 class="author-name">Contests, Sweepstakes and Promotions</h5>
+                            <p class="description" style="text-transform: none;">
+                                Any contests, sweepstakes or other promotions (collectively, “Promotions”) made available through Service may be governed by rules that are separate from these Terms of Service. If you participate in any Promotions, please review the applicable rules as well as our Privacy Policy. If the rules for a Promotion conflict with these Terms of Service, Promotion rules will apply.
+                            </p>
+                            <h5 class="author-name">Subscriptions</h5>
+                            <p class="description" style="text-transform: none;">
+                                Some parts of Service are billed on a subscription basis ("Subscription(s)"). You will be billed in advance on a recurring and periodic basis ("Billing Cycle"). Billing cycles will be set depending on the type of subscription plan you select when purchasing a Subscription. <br>
+                                At the end of each Billing Cycle, your Subscription will automatically renew under the exact same conditions unless you cancel it or Publiso cancels it. You may cancel your Subscription renewal either through your online account management page or by contacting info.publiso@gmail.com customer support team. <br>
+                                A valid payment method is required to process the payment for your subscription. You shall provide Publiso with accurate and complete billing information that may include but not limited to full name, address, state, postal or zip code, telephone number, and a valid payment method information. By submitting such payment information, you automatically authorize Publiso to charge all Subscription fees incurred through your account to any such payment instruments. <br>
+                                Should automatic billing fail to occur for any reason, Publiso reserves the right to terminate your access to the Service with immediate effect.
+                            </p>
+                            <h5 class="author-name">Fee Changes</h5>
+                            <p class="description" style="text-transform: none;">
+                                Publiso, in its sole discretion and at any time, may modify Subscription fees for the Subscriptions. Any Subscription fee change will become effective at the end of the then-current Billing Cycle. <br>
+                                Publiso will provide you with a reasonable prior notice of any change in Subscription fees to give you an opportunity to terminate your Subscription before such change becomes effective. <br>
+                                Your continued use of Service after Subscription fee change comes into effect constitutes your agreement to pay the modified Subscription fee amount.
+                            </p>
+                            <h5 class="author-name">Refunds</h5>
+                            <p class="description" style="text-transform: none;">
+                                We issue refunds for Contracts within 3 days of the original purchase of the Contract.
+                            </p>
+                            <h5 class="author-name">Content</h5>
+                            <p class="description" style="text-transform: none;">
+                                Content found on or through this Service are the property of Publiso or used with permission. You may not distribute, modify, transmit, reuse, download, repost, copy, or use said Content, whether in whole or in part, for commercial purposes or for personal gain, without express advance written permission from us.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div> 
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script>
+        isNavOpen = false;
+
+        $('.hamburger').click(function(){
+            if(isNavOpen){
+                $('.sidenav').css({'transform':'translateX(-100%)'});
+                $('.main-section').css({'pointer-events':'all'});
+                isNavOpen = false;
+            }else{
+                $('.sidenav').css({'transform':'translateX(0%)'});
+                $('.main-section').css({'pointer-events':'none'});
+                isNavOpen = true;
+            }
+        });
+
+        $('.search.px630').click(function(){
+            if($(this).hasClass('active')){
+                $(this).removeClass('active');
+                $('.search-box.px630').removeClass('active');
+            }else{
+                $(this).addClass('active');
+                $('.search-box.px630').addClass('active');
+            }
+        });
+
+        var navbar = document.getElementsByClassName("head-cover")[0];
+
+        var sticky = navbar.offsetHeight;
+
+        document.getElementsByClassName("main-section")[0].onscroll = function() {
+            if (document.getElementsByClassName("main-section")[0].scrollTop >= sticky) {
+                navbar.classList.add("sticky")
+            } else {
+                navbar.classList.remove("sticky");
+            }
+        };
+
+        // book of the day toggle script
+        $('.first-row .bk-of-day .box').first().addClass('active');
+
+
+        function resize() {
+            // s
+        }
+
+        window.onresize = resize;
+        window.onload = function () {
+            resize();
+        }
+    </script>
+</body>
+</html>
