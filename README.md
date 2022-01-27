@@ -46,8 +46,15 @@ At last create a db.sqlite3 in the same directory and run:
    $	python manage.py migrate
 ```
 
+Don't forget to create a superuser:
+```
+   $	python manage.py createsuperuser
+```
+
 ### Run
 
 ```
    $	python manage.py runserver
 ```
+
+Manage data on the admin page : http://127.0.0.1:8000/admin
