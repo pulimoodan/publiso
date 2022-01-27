@@ -4,6 +4,10 @@
 
 Publiso is an online ebook store and reader platform. [Visit Website](https://publiso.in)
 
+## Screenshot
+
+![Website Screenshot](https://github.com/pulimoodan/publiso/blob/master/Screenshot%20(41).png)
+
 ## Installation
 
 Download publiso source code as zip and unzip it into a directory.
