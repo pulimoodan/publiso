@@ -61,4 +61,4 @@ Don't forget to create a superuser:
    $	python manage.py runserver
 ```
 
-Manage data on the admin page : http://127.0.0.1:8000/admin
+Add some books, authors and categories at : http://127.0.0.1:8000/admin and you are ready to go.
