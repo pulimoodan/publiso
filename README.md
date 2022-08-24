@@ -2,7 +2,7 @@
 
 # Publiso
 
-Publiso is an online ebook store and reader platform. [Visit Website](https://publiso.in)
+Publiso is an online ebook store and reader platform. [Visit Website](https://publizo.herokuapp.com/)
 
 ## Screenshot
 
